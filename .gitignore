@@ -1,0 +1,21 @@
+# Data
+data/
+conjunctiva_split/
+
+# Outputs
+outputs/
+codebase/outputs/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Environments
+env/
+venv/
+.env
+
+# IDEs
+.vscode/
+.idea/
