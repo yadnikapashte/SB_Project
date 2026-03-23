@@ -6,23 +6,27 @@ All hyperparameters, paths, and settings are defined here.
 Change model_name to automatically switch architectures.
 """
 
-import torch
+import datetime
 import os
+import torch
 
 # ─────────────────────────────────────────────
 # Dataset Paths
 # ─────────────────────────────────────────────
 # Path to the raw dataset (organized by class folders)
-RAW_DATA_PATH = "../conjunctiva_split" 
+RAW_DATA_PATH = "../palm_split" 
 
 # Proportions for splitting the raw data
 DATA_SPLIT_RATIO = (0.8, 0.1, 0.1)  # (train, val, test)
 
 # Where the processed (split) data will be stored
-DATA_ROOT = "../data/processed"
+DATA_ROOT = "../data/processed1"
 TRAIN_DIR = os.path.join(DATA_ROOT, "train")
 VAL_DIR   = os.path.join(DATA_ROOT, "val")
 TEST_DIR  = os.path.join(DATA_ROOT, "test")
+
+# Downsample directory - stores excess images when per-class limit is applied
+DOWN_SAMPLE_DIR = os.path.join(DATA_ROOT, "downsample")
 
 # ─────────────────────────────────────────────
 # Model Parameters
@@ -33,21 +37,32 @@ MODEL_NAME  = "resnet50"
 # ─────────────────────────────────────────────
 # Training Parameters
 # ─────────────────────────────────────────────
-EPOCHS          = 20
+EPOCHS          = 40
 BATCH_SIZE      = 32
-LEARNING_RATE   = 0.001
+LEARNING_RATE   = 0.0005
 NUM_WORKERS     = 4
-EARLY_STOPPING_PATIENCE = 5   # stop if val loss doesn't improve
+EARLY_STOPPING_PATIENCE = 10   # cosine LR needs more patience
+
+# Training strategy flags
+LABEL_SMOOTHING    = 0.1    # CrossEntropy label smoothing (0 = off)
+USE_COSINE_LR      = True   # CosineAnnealingLR instead of ReduceLROnPlateau
+LR_BACKBONE_FACTOR = 0.1    # backbone gets LR * this factor (differential LR)
+GRAD_CLIP_MAX_NORM = 1.0    # gradient clipping max norm (0 = off)
+
+# MixUp regularisation
+USE_MIXUP          = True   # blend two training samples
+MIXUP_ALPHA        = 0.2    # Beta distribution alpha for mix ratio
 
 # ─────────────────────────────────────────────
 # Image Parameters
 # ─────────────────────────────────────────────
-IMAGE_SIZE = 224   # height and width fed to the network
+IMAGE_SIZE  = 224   # crop size fed to the network
+RESIZE_SIZE = 256   # resize before center-crop (val/test) or random-crop (train)
 
 # Target images per class for training (None = unlimited). 
 # If images < target, training set will be oversampled (physically augmented). 
 # If images > target, it will be capped.
-IMAGES_PER_CLASS = 800   
+IMAGES_PER_CLASS = 2000  
 AUG_PER_IMAGE    = 12    # max augmented versions per original image
 
 # ─────────────────────────────────────────────
@@ -71,7 +86,7 @@ USE_AUGMENTATION = True
 
 # --- Advanced Augmentation Parameters ---
 APPLY_ROTATION      = True
-AUG_ROTATION_DEGREES = 20      # Rotates image by +/- degrees
+AUG_ROTATION_DEGREES = 30      # Rotates image by +/- degrees
 
 APPLY_HFLIP         = True
 AUG_HFLIP_PROB       = 0.5     # Prob of horizontal flip
@@ -94,6 +109,10 @@ AUG_HUE              = 0.05    # Hue jitter
 APPLY_RANDOM_ERASING = True
 AUG_RANDOM_ERASING_PROB = 0.1  # Prob of random erasing a patch
 
+APPLY_GAUSSIAN_BLUR     = True
+AUG_GAUSSIAN_BLUR_PROB  = 0.3  # Prob of applying Gaussian blur
+AUG_GAUSSIAN_BLUR_SIGMA = (0.1, 2.0)  # sigma range for the blur kernel
+
 # ─────────────────────────────────────────────
 # Normalization Constants (ImageNet defaults)
 # ─────────────────────────────────────────────
@@ -110,4 +129,6 @@ GRADCAM_ALPHA      = 0.5 # overlay transparency
 # Logging
 # ─────────────────────────────────────────────
 LOG_LEVEL = "INFO"
-LOG_FILE  = os.path.join(OUTPUT_DIR, "pipeline.log")
+_RUN_TIMESTAMP = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+LOG_DIR  = os.path.join(OUTPUT_DIR, "logs")
+LOG_FILE = os.path.join(LOG_DIR, f"pipeline_{_RUN_TIMESTAMP}.log")

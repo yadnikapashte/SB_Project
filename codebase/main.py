@@ -45,11 +45,11 @@ from utils.save_utils   import save_class_mapping, load_model_weights
 
 def setup_logging() -> None:
     """Configure root logger to write to console and a log file."""
-    os.makedirs(os.path.dirname(config.LOG_FILE), exist_ok=True)
+    os.makedirs(config.LOG_DIR, exist_ok=True)
     fmt = "%(asctime)s | %(levelname)-8s | %(name)s | %(message)s"
     handlers = [
         logging.StreamHandler(sys.stdout),
-        logging.FileHandler(config.LOG_FILE, mode="w"),
+        logging.FileHandler(config.LOG_FILE, mode="a"),
     ]
     logging.basicConfig(
         level=getattr(logging, config.LOG_LEVEL, logging.INFO),
@@ -68,6 +68,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Image Classification Pipeline")
     parser.add_argument("--data_dir", type=str, default=None,
                         help="Path to the data directory (containing train/val/test).")
+    parser.add_argument("--force", action="store_true", help="Force re-split of dataset")
     args = parser.parse_args()
 
     # Override config dirs if --data_dir is provided
@@ -93,7 +94,7 @@ def main() -> None:
     # ── Step 1: Preprocess ────────────────────────────────────────
     logger.info("\n─── Step 1 / 9 : Preprocessing ───")
     try:
-        pp = preprocess.prepare_datasets()
+        pp = preprocess.prepare_datasets(force=args.force)
     except FileNotFoundError as exc:
         logger.error(str(exc))
         logger.error(

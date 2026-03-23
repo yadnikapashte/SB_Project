@@ -1,0 +1,18 @@
+2026-03-18 21:51:56,207 | INFO     | __main__ | =======================================================
+2026-03-18 21:51:56,207 | INFO     | __main__ | Preprocessing: ensuring dataset split ...
+2026-03-18 21:51:56,209 | INFO     | __main__ | [preprocess] Split data already exists. Skipping split.
+2026-03-18 21:51:56,210 | INFO     | __main__ | Preprocessing: validating dataset directories …
+2026-03-18 21:51:56,210 | INFO     | __main__ | [preprocess] train: 2 classes found in '../data/processed1\train'.
+2026-03-18 21:51:56,210 | INFO     | __main__ | [preprocess] val: 2 classes found in '../data/processed1\val'.
+2026-03-18 21:51:56,210 | INFO     | __main__ | [preprocess] test: 2 classes found in '../data/processed1\test'.
+2026-03-18 21:51:56,212 | INFO     | __main__ | Discovering training classes …
+2026-03-18 21:51:56,215 | INFO     | __main__ |   Class 'anemia': 750 images total in dataset split.
+2026-03-18 21:51:56,223 | INFO     | __main__ |   Class 'non_anemia': 2000 images total in dataset split.
+2026-03-18 21:51:56,225 | INFO     | __main__ | Discovering validation classes …
+2026-03-18 21:51:56,229 | INFO     | __main__ |   Class 'anemia': 256 images total in dataset split.
+2026-03-18 21:51:56,234 | INFO     | __main__ |   Class 'non_anemia': 169 images total in dataset split.
+2026-03-18 21:51:56,234 | INFO     | __main__ | Discovering test classes …
+2026-03-18 21:51:56,235 | INFO     | __main__ |   Class 'anemia': 257 images total in dataset split.
+2026-03-18 21:51:56,242 | INFO     | __main__ |   Class 'non_anemia': 171 images total in dataset split.
+2026-03-18 21:51:56,242 | INFO     | __main__ | Total classes: 2  ->  ['anemia', 'non_anemia']
+2026-03-18 21:51:56,242 | INFO     | __main__ | Advanced augmentation enabled for training set.

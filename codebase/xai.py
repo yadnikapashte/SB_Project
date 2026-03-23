@@ -298,6 +298,8 @@ if __name__ == "__main__":
                         help="Path to the directory where Grad-CAM results will be saved.")
     parser.add_argument("--model", type=str, default=None,
                         help="Path to the model checkpoint to use for explanations.")
+    parser.add_argument("--model_name", type=str, default=None,
+                        help="Architecture of the model (e.g., resnet50, resnet34). Overrides config.MODEL_NAME.")
     args = parser.parse_args()
 
     # Override config dirs if --data_dir is provided
@@ -311,8 +313,26 @@ if __name__ == "__main__":
         config.GRADCAM_SAVE_PATH = args.output
         os.makedirs(config.GRADCAM_SAVE_PATH, exist_ok=True)
 
-    # Setup simple console logging for standalone run
-    logging.basicConfig(level=logging.INFO, format="%(levelname)-8s | %(message)s")
+    if args.model_name:
+        config.MODEL_NAME = args.model_name
+    elif args.model:
+        if 'resnet34' in args.model.lower():
+            config.MODEL_NAME = 'resnet34'
+        elif 'resnet50' in args.model.lower():
+            config.MODEL_NAME = 'resnet50'
+        elif 'mobilenet' in args.model.lower():
+            config.MODEL_NAME = 'mobilenet'
+
+    # Setup simple console + file logging for standalone run
+    os.makedirs(config.LOG_DIR, exist_ok=True)
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(levelname)-8s | %(message)s",
+        handlers=[
+            logging.StreamHandler(),
+            logging.FileHandler(config.LOG_FILE, mode="a"),
+        ],
+    )
 
     device = torch.device(config.DEVICE)
 
